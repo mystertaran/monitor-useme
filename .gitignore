@@ -1,3 +1,5 @@
 .env
 
+
+*.log
 previous_jobs.json
