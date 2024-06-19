@@ -1,5 +1,6 @@
 .env
 
 
+*.sh
 *.log
 previous_jobs.json
