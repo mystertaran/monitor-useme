@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import FROM_EMAIL, EMAIL_PASSWORD, TO_EMAIL
 
-# Konfiguracja logowania błędów
+
 error_logger = logging.getLogger('error_logger')
 
 def send_email(subject, body):

@@ -81,14 +81,16 @@ def check_for_new_jobs():
 
 previous_jobs = load_previous_jobs()
 
-schedule.every(1).minutes.do(check_for_new_jobs)
+if __name__ == '__main__':
 
-print("Starting job monitor...")
-app_logger.info("Job monitor started.")
-while True:
-    try:
-        schedule.run_pending()
-        time.sleep(15)  
-    except Exception as e:
-        error_logger.error(f"Error in main loop: {e}")
-        print(f"Error in main loop: {e}")  
+    schedule.every(1).minutes.do(check_for_new_jobs)
+
+    print("Starting job monitor...")
+    app_logger.info("Job monitor started.")
+    while True:
+        try:
+            schedule.run_pending()
+            time.sleep(15)  
+        except Exception as e:
+            error_logger.error(f"Error in main loop: {e}")
+            print(f"Error in main loop: {e}")  
