@@ -41,7 +41,16 @@ def save_previous_jobs(jobs):
 def notify_new_jobs(new_jobs):
     try:
         subject = "New Job Listings Available"
-        body = "\n\n".join([f"{job['title']}: {job['link']}\n{job['description']}" for job in new_jobs])
+        body = "<html><body>"
+        for job in new_jobs:
+            body += f"""
+            <table border="1" cellspacing="0" cellpadding="10" style="margin-bottom: 20px;">
+                <tr><td><strong>{job['title']}</strong></td></tr>
+                <tr><td><a href="{job['link']}">LINK</a></td></tr>
+                <tr><td>{job['description']}</td></tr>
+            </table>
+            """
+        body += "</body></html>"
         send_email(subject, body)
     except Exception as e:
         error_logger.error(f"Error sending email: {e}")
@@ -53,7 +62,10 @@ def log_jobs(jobs):
 def check_for_new_jobs():
     global previous_jobs
     try:
+        app_logger.info("Checking for new jobs...")
+        print("Checking for new jobs...")  
         current_jobs = fetch_jobs()
+        app_logger.info(f"Fetched {len(current_jobs)} jobs.")
 
         new_jobs = [job for job in current_jobs if job not in previous_jobs]
         if new_jobs:
@@ -65,15 +77,18 @@ def check_for_new_jobs():
         save_previous_jobs(previous_jobs)
     except Exception as e:
         error_logger.error(f"Error checking for new jobs: {e}")
+        print(f"Error checking for new jobs: {e}")  
 
 previous_jobs = load_previous_jobs()
 
-schedule.every(10).minutes.do(check_for_new_jobs)
+schedule.every(1).minutes.do(check_for_new_jobs)
 
 print("Starting job monitor...")
+app_logger.info("Job monitor started.")
 while True:
     try:
         schedule.run_pending()
-        time.sleep(60)  # Czekanie 60 sekund przed ponownym sprawdzeniem harmonogramu
+        time.sleep(15)  
     except Exception as e:
         error_logger.error(f"Error in main loop: {e}")
+        print(f"Error in main loop: {e}")  

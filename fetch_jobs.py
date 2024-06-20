@@ -1,7 +1,7 @@
 import requests
-import logging
 from bs4 import BeautifulSoup
 from config import JOB_URL
+import logging
 
 # Konfiguracja logowania błędów
 error_logger = logging.getLogger('error_logger')

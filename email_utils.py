@@ -9,12 +9,16 @@ error_logger = logging.getLogger('error_logger')
 
 def send_email(subject, body):
     try:
-        msg = MIMEMultipart()
+        msg = MIMEMultipart("alternative")
         msg['From'] = FROM_EMAIL
         msg['To'] = TO_EMAIL
         msg['Subject'] = subject
 
-        msg.attach(MIMEText(body, 'plain'))
+        text_part = MIMEText(body, 'plain')
+        msg.attach(text_part)
+
+        html_part = MIMEText(body, 'html')
+        msg.attach(html_part)
 
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
             server.starttls()
