@@ -66,12 +66,19 @@ def check_for_new_jobs():
         print("Checking for new jobs...")  
         current_jobs = fetch_jobs()
         app_logger.info(f"Fetched {len(current_jobs)} jobs.")
+        
+        app_logger.info("Compare old jobs")
+        print("Compare old jobs")
 
         new_jobs = [job for job in current_jobs if job not in previous_jobs]
         if new_jobs:
             notify_new_jobs(new_jobs)
             log_jobs(new_jobs)
             print(f"Found {len(new_jobs)} new jobs.")
+            
+        else:
+            app_logger.info("No new jobs")
+            print("No new jobs")
 
         previous_jobs = current_jobs
         save_previous_jobs(previous_jobs)
