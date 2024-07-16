@@ -38,6 +38,19 @@ def save_previous_jobs(jobs):
     except Exception as e:
         error_logger.error(f"Error saving previous jobs: {e}")
 
+def normalize_job(job):
+    return {
+        'title': job['title'].strip().lower(),
+        'link': job['link'].strip().lower(),
+        'description': job['description'].strip()
+    }
+
+def are_jobs_equal(job1, job2):
+    job1_norm = normalize_job(job1)
+    job2_norm = normalize_job(job2)
+    return (job1_norm['title'] == job2_norm['title'] and
+            job1_norm['link'] == job2_norm['link'])
+
 def notify_new_jobs(new_jobs):
     try:
         subject = "Nowe zlecenia na USEME"
@@ -63,28 +76,27 @@ def check_for_new_jobs():
     global previous_jobs
     try:
         app_logger.info("Checking for new jobs...")
-        print("Checking for new jobs...")  
         current_jobs = fetch_jobs()
         app_logger.info(f"Fetched {len(current_jobs)} jobs.")
         
-        app_logger.info("Compare old jobs")
-        print("Compare old jobs")
+        new_jobs = []
+        for current_job in current_jobs:
+            if not any(are_jobs_equal(current_job, previous_job) for previous_job in previous_jobs):
+                new_jobs.append(current_job)
+            else:
+                app_logger.info(f"Job already exists: {current_job['title']}")
 
-        new_jobs = [job for job in current_jobs if job not in previous_jobs]
         if new_jobs:
             notify_new_jobs(new_jobs)
             log_jobs(new_jobs)
-            print(f"Found {len(new_jobs)} new jobs.")
-            
+            app_logger.info(f"Found {len(new_jobs)} new jobs.")
         else:
             app_logger.info("No new jobs")
-            print("No new jobs")
 
         previous_jobs = current_jobs
         save_previous_jobs(previous_jobs)
     except Exception as e:
         error_logger.error(f"Error checking for new jobs: {e}")
-        print(f"Error checking for new jobs: {e}")  
 
 previous_jobs = load_previous_jobs()
 
